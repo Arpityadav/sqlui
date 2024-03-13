@@ -64,7 +64,7 @@ df = fetch_data()
 # Displaying the table
 st.write(df)
 
-question = st.text_input("Input: ", key="input")
+question = st.text_input("Input: ", key="input", placeholder="I want all the students of section A")
 
 submit = st.button("Ask the question")
 
