@@ -5,6 +5,18 @@ import streamlit as st
 import os
 import sqlite3
 import google.generativeai as genai
+import pandas as pd 
+from sqlalchemy import create_engine
+
+# Function to fetch data from SQLite database
+def fetch_data():
+    # SQLAlchemy connectable
+    cnx = create_engine('sqlite:///student.db').connect()
+    
+    # Table named 'STUDENT' will be returned as a dataframe.
+    df = pd.read_sql_table('STUDENT', cnx)
+    return df
+
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
@@ -42,7 +54,15 @@ prompt = [
 # Streamlit app
 
 st.set_page_config(page_title="I can retrieve any SQL query")
-st.header("Gemini App to retrieve SQL Data")
+st.header("Gemini App to retrieve SQL query and SQL Data")
+
+st.title('Student Table')
+
+# Fetching data from SQLite database
+df = fetch_data()
+
+# Displaying the table
+st.write(df)
 
 question = st.text_input("Input: ", key="input")
 
@@ -55,6 +75,9 @@ if submit:
 
     response = get_gemini_response(question, prompt)
     st.subheader("The Response is ")
+    st.write("SQL Query is " + response)
+
+    st.write("Result of this query: ")
     response = read_sql_query(response, "student.db")
     for row in response:
         print(row)
